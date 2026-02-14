@@ -7,7 +7,7 @@ st.set_page_config(page_title="Poker Range Selector", page_icon="🃏", layout="
 
 positions = ["SB", "BB", "EP", "MP", "HJ", "LJ", "CO", "Button"]
 stacks = ["0-10", "10-20", "25+"]
-viloes = ["HJ", "LJ", "CO", "EP", "MP", "BTN"]
+viloes = ["HJ", "CO", "EP", "MP", "BTN"]
 
 st.title("🃏 Visualizador de Ranges")
 
@@ -64,7 +64,6 @@ if st.button("Visualizar Range", use_container_width=True):
         msg = f"Não há ranges para a solicitação: **{pos_choice}** com **{stack_choice} BB**."
         
         st.warning(f"ℹ️ {msg}")
-        st.info("Dica: Verifique se o arquivo de imagem foi adicionado à pasta correta no VS Code.")
 
 st.sidebar.header("🔍 Info Técnica")
 st.sidebar.write(f"**Posição:** {pos_choice}")
