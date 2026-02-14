@@ -54,7 +54,7 @@ if st.button("Visualizar Range", use_container_width=True):
     if image_path:
         st.subheader(f"📊 Exibindo: {nome_arquivo_encontrado.replace('.jpg', '')}")
         img = Image.open(image_path)
-        st.image(img, use_container_width=True)
+        st.image(img, width= 600, use_container_width=False)
     else:
         if vs_choice and vs_choice != "Nenhum":
             msg = f"Não há ranges para a solicitação: **{pos_choice} vs {vs_choice}**."
