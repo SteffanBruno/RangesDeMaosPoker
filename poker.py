@@ -1,77 +1,70 @@
 import streamlit as st
 import os
-import sys
-import subprocess
 from PIL import Image
 
-# --- FUNÇÃO PARA ABRIR EXTERNAMENTE (OPCIONAL) ---
-def open_image_externally(path):
-    if sys.platform.startswith('darwin'):
-        subprocess.call(['open', path])
-    elif os.name == 'nt':
-        os.startfile(path)
-    elif os.name == 'posix':
-        subprocess.call(['xdg-open', path])
-
-# --- CONFIGURAÇÕES E LISTAS ---
+# --- configuracao base do buscador---
 st.set_page_config(page_title="Poker Range Selector", page_icon="🃏", layout="wide")
 
 positions = ["SB", "BB", "EP", "MP", "HJ", "LJ", "CO", "Button"]
 stacks = ["0-10", "10-20", "25+"]
-viloes = ["HJ", "CO", "EP", "MP", "BTN"]
+viloes = ["HJ", "LJ", "CO", "EP", "MP", "BTN"]
 
 st.title("🃏 Visualizador de Ranges")
 
-# --- INTERFACE DE USUÁRIO ---
+# --- interface para visualizacao ---
 col1, col2 = st.columns(2)
-
 with col1:
     pos_choice = st.selectbox("Sua Posição:", positions)
-
 with col2:
     stack_choice = st.selectbox("Stack (Blinds):", stacks)
 
-# Lógica de Versus (Aparece apenas para SB e BB)
 vs_choice = None
 if pos_choice in ["SB", "BB"]:
     st.markdown("---")
     opcoes_viloes = [v for v in viloes if v != pos_choice]
     vs_choice = st.selectbox("Versus (Oponente):", ["Nenhum"] + opcoes_viloes)
 
-# --- LÓGICA DE DIRETÓRIOS ---
+# --- logica para busca dos arquivos de imagem ---
 diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+image_path = None
+nome_arquivo_encontrado = ""
 
-# Se houver um Versus selecionado, muda a busca para a pasta "vs"
 if pos_choice in ["SB", "BB"] and vs_choice and vs_choice != "Nenhum":
-    nome_arquivo = f"{pos_choice} x {vs_choice}.jpg"
-    image_path = os.path.join(diretorio_atual, "ranges", "vs", nome_arquivo)
+    pasta_alvo = os.path.join(diretorio_atual, "ranges", "vs")
+    termo_busca = f"{pos_choice}x{vs_choice}".lower().replace(" ", "")
+    
+    if os.path.exists(pasta_alvo):
+        for f in os.listdir(pasta_alvo):
+            f_limpo = f.lower().replace(" ", "").replace(".jpg", "").replace(".png", "")
+            if f_limpo == termo_busca:
+                image_path = os.path.join(pasta_alvo, f)
+                nome_arquivo_encontrado = f
+                break
 else:
-    # Caso contrário, busca nas pastas de stack (0-10, 10-20, etc)
-    nome_arquivo = f"{pos_choice}.jpg"
-    image_path = os.path.join(diretorio_atual, "ranges", stack_choice, nome_arquivo)
+    nome_padrao = f"{pos_choice}.jpg"
+    temp_path = os.path.join(diretorio_atual, "ranges", stack_choice, nome_padrao)
+    if os.path.exists(temp_path):
+        image_path = temp_path
+        nome_arquivo_encontrado = nome_padrao
 
 st.divider()
 
-# --- BOTÃO DE EXIBIÇÃO ---
+# --- exibicao da mensagem de erro caso nao haja uma imagem para exibir ---
 if st.button("Visualizar Range", use_container_width=True):
-    if os.path.exists(image_path):
-        exibicao = nome_arquivo.replace('.jpg', '')
-        st.subheader(f"📊 {exibicao} | {stack_choice if 'vs' not in image_path else 'Confronto'} ")
-        
+    if image_path:
+        st.subheader(f"📊 Exibindo: {nome_arquivo_encontrado.replace('.jpg', '')}")
         img = Image.open(image_path)
         st.image(img, use_container_width=True)
-        
-        # Opcional: Descomente para abrir no visualizador do Windows também
-        # open_image_externally(image_path) 
     else:
-        st.error(f"❌ Arquivo não encontrado!")
-        st.info(f"O sistema buscou em: {image_path}")
-        st.markdown(f"**Dica:** Verifique se o arquivo `{nome_arquivo}` está dentro da pasta correta.")
+        if vs_choice and vs_choice != "Nenhum":
+            msg = f"Não há ranges para a solicitação: **{pos_choice} vs {vs_choice}**."
+        else:
+            msg = f"Não há ranges para a solicitação: **{pos_choice}** com **{stack_choice} BB**."
+        
+        st.warning(f"ℹ️ {msg}")
+        st.info("Dica: Verifique se o arquivo de imagem foi adicionado à pasta correta no VS Code.")
 
-# --- SIDEBAR DE STATUS (DEBUG) ---
-st.sidebar.header("Status do Ambiente")
+st.sidebar.header("🔍 Info Técnica")
 st.sidebar.write(f"**Posição:** {pos_choice}")
-st.sidebar.write(f"**Stack:** {stack_choice}")
-if vs_choice:
-    st.sidebar.write(f"**Versus:** {vs_choice}")
-st.sidebar.write(f"**Arquivo Alvo:** {nome_arquivo}")
+if vs_choice: st.sidebar.write(f"**Versus:** {vs_choice}")
+st.sidebar.write(f"**Status:** {'✅ Localizado' if image_path else '❌ Não encontrado'}")
