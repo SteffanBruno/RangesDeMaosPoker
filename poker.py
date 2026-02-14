@@ -18,7 +18,7 @@ st.set_page_config(page_title="Poker Range Selector", page_icon="🃏", layout="
 
 positions = ["SB", "BB", "EP", "MP", "HJ", "LJ", "CO", "Button"]
 stacks = ["0-10", "10-20", "25+"]
-viloes = ["SB", "BB", "HJ", "LJ", "CO", "EP", "MP", "Button"]
+viloes = ["SB", "BB", "HJ", "CO", "EP", "MP", "Button"]
 
 st.title("🃏 Visualizador de Ranges")
 
