@@ -41,7 +41,7 @@ if pos_choice in ["SB", "BB"]:
 # --- LÓGICA DE DIRETÓRIOS ---
 diretorio_atual = os.path.dirname(os.path.abspath(__file__))
 
-# Se houver um Versus selecionado, muda a busca para a pasta 'vs'
+# Se houver um Versus selecionado, muda a busca para a pasta "vs"
 if pos_choice in ["SB", "BB"] and vs_choice and vs_choice != "Nenhum":
     nome_arquivo = f"{pos_choice} x {vs_choice}.jpg"
     image_path = os.path.join(diretorio_atual, "ranges", "vs", nome_arquivo)
