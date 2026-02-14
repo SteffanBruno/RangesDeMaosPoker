@@ -54,12 +54,14 @@ if st.button("Visualizar Range", use_container_width=True):
     if image_path:
         st.subheader(f"📊 Exibindo: {nome_arquivo_encontrado.replace('.jpg', '')}")
         img = Image.open(image_path)
-        st.image(img, width= 600, use_container_width=False)
+        
+        col_esq, col_meio, col_dir = st.columns([1, 2, 1])
+        
+        with col_meio:
+            st.image(img, width=600, use_container_width=False)
+            
     else:
-        if vs_choice and vs_choice != "Nenhum":
-            msg = f"Não há ranges para a solicitação: **{pos_choice} vs {vs_choice}**."
-        else:
-            msg = f"Não há ranges para a solicitação: **{pos_choice}** com **{stack_choice} BB**."
+        msg = f"Não há ranges para a solicitação: **{pos_choice}** com **{stack_choice} BB**."
         
         st.warning(f"ℹ️ {msg}")
         st.info("Dica: Verifique se o arquivo de imagem foi adicionado à pasta correta no VS Code.")
